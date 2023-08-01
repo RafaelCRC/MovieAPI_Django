@@ -1,7 +1,7 @@
 import datetime
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
 #from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 def current_year():
@@ -22,8 +22,25 @@ class Movie(models.Model):
         return f"{self.title}"
     
 class User(AbstractUser):
+    USER_ROLE_CHOICES = (
+        ('regular', 'Regular User'),
+        ('admin', 'Administrator'),
+    )
     email = models.EmailField(unique=True)
     birthday = models.DateField(null=True, blank=True)
+    role = models.CharField(max_length=10, choices=USER_ROLE_CHOICES, default='regular')
 
     def __str__(self):
-        return f"{self.email}"
+        return self.username
+    
+
+class RegularUserPermission(Permission):
+    def has_permission(self, request, view):
+        return request.user.role == 'regular'
+
+class AdminUserPermission(Permission):
+    def has_permission(self, request, view):
+        return request.user.role == 'admin'
+    
+    def has_object_permission(self, request, view, obj):
+        return request.user.role == 'admin'

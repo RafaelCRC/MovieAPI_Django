@@ -30,12 +30,17 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'movie_api.User'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]}
+
 
 # Application definition
 
 INSTALLED_APPS = [
     'rest_framework',
-    'corsheaders',
+    #'corsheaders',
     'movie_api',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,7 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    #'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'movie_api.urls'
 

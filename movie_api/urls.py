@@ -21,13 +21,18 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views import movie_list, movie_detail_id, UserRegistrationView #, user_list, user_detail
+from .views import movie_list, movie_detail_id, UserRegistrationView, UserLoginView, UserListCreateView, UserRetrieveUpdateDestroyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('movies/', movie_list, name='movie-list'),
     path('movies/<int:id>', movie_detail_id, name='movie-detail'),
     path('register/', UserRegistrationView.as_view(), name='user-register'),
+
+    
+    path('login/', UserLoginView.as_view(), name='user-login'),
+    path('users/', UserListCreateView.as_view(), name='user-list-create'),
+    path('users/<int:pk>/', UserRetrieveUpdateDestroyView.as_view(), name='user-retrieve-update-destroy'),
 ]
 
 if settings.DEBUG:
