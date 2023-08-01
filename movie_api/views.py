@@ -2,12 +2,12 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import JsonResponse
+#from django.http import JsonResponse
 from .models import Movie
 from .serializers import MovieSerializer
 
 class CustomPageNumberPagination(PageNumberPagination):
-    page_size = 1  
+    page_size = 5  
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -17,7 +17,13 @@ def movie_list(request):
     paginator = CustomPageNumberPagination()
 
     if request.method == 'GET':
-        movies = Movie.objects.all()
+        title = request.GET.get('title', None)
+
+        if title:
+            movies = Movie.objects.filter(title__icontains=title)
+        else:
+            movies = Movie.objects.all()
+            
         paginated_movies = paginator.paginate_queryset(movies, request)
         serializer = MovieSerializer(paginated_movies, many=True)
         #return JsonResponse({ 'movies': serializer.data }, safe=False, status=status.HTTP_200_OK)
