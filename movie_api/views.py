@@ -1,6 +1,6 @@
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import CreateAPIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 #from django.http import JsonResponse
@@ -9,6 +9,7 @@ from .serializers import MovieSerializer, UserSerializer, UserCRUDSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from datetime import date
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 5  
@@ -16,17 +17,24 @@ class CustomPageNumberPagination(PageNumberPagination):
     max_page_size = 100
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def movie_list(request):
 
     paginator = CustomPageNumberPagination()
 
     if request.method == 'GET':
         title = request.GET.get('title', None)
+        user_age = None
+        if request.user.birthday:
+            user_age = (date.today() - request.user.birthday).days // 365
 
         if title:
             movies = Movie.objects.filter(title__icontains=title)
         else:
             movies = Movie.objects.all()
+
+        if user_age:
+            movies = movies.filter(age_rating__lte=user_age)
 
         paginated_movies = paginator.paginate_queryset(movies, request)
         serializer = MovieSerializer(paginated_movies, many=True)
@@ -41,6 +49,7 @@ def movie_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def movie_detail_id(request, id):
 
     try:
@@ -48,11 +57,21 @@ def movie_detail_id(request, id):
     except Movie.DoesNotExist:
         return Response({"error": "Movie not found."}, status=status.HTTP_404_NOT_FOUND)
     
+    user_age = None
+    if request.user.birthday:
+        user_age = (date.today() - request.user.birthday).days // 365
+
     if request.method == 'GET':
+        if user_age and movie.age_rating > user_age:
+            return Response({"error": "You are not allowed to view this movie."}, status=status.HTTP_403_FORBIDDEN)
+        
         serializer = MovieSerializer(movie)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'PUT':
+        if user_age and movie.age_rating > user_age:
+            return Response({"error": "You are not allowed to update this movie."}, status=status.HTTP_403_FORBIDDEN)
+        
         serializer = MovieSerializer(movie, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -60,6 +79,9 @@ def movie_detail_id(request, id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
+        if user_age and movie.age_rating > user_age:
+            return Response({"error": "You are not allowed to update this movie."}, status=status.HTTP_403_FORBIDDEN)
+        
         movie.delete()
         return Response({"message": "Movie deleted."}, status=status.HTTP_204_NO_CONTENT)
 

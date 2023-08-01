@@ -4,7 +4,7 @@ from .models import Movie, User
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'year', 'category', 'description', 'image']
+        fields = ['id', 'title', 'year', 'category', 'description', 'image', 'age_rating']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_password(password)
         user.save()
         return user
-    
 
 class UserCRUDSerializer(serializers.ModelSerializer):
     class Meta:
