@@ -1,10 +1,11 @@
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import CreateAPIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 #from django.http import JsonResponse
-from .models import Movie
-from .serializers import MovieSerializer
+from .models import Movie, User
+from .serializers import MovieSerializer, UserSerializer
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 5  
@@ -58,3 +59,7 @@ def movie_detail_id(request, id):
     elif request.method == 'DELETE':
         movie.delete()
         return Response({"message": "Movie deleted."}, status=status.HTTP_204_NO_CONTENT)
+
+class UserRegistrationView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

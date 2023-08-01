@@ -1,7 +1,8 @@
 import datetime
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractUser
+#from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 def current_year():
     return datetime.date.today().year
@@ -19,3 +20,10 @@ class Movie(models.Model):
 
     def __str__(self):
         return f"{self.title}"
+    
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    birthday = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.email}"
