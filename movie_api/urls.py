@@ -16,15 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from movie_api import views
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from django.conf import settings
 from django.conf.urls.static import static
 
+from .views import movie_list, movie_detail_id #, user_list, user_detail
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('movies/', views.movie_list),
-    path('movies/<int:id>', views.movie_detail_id)
+    path('movies/', movie_list, name='movie-list'),
+    path('movies/<int:id>', movie_detail_id, name='movie-detail'),
+    # path('users/', user_list, name='user-list'),
+    # path('users/<int:pk>/', user_detail, name='user-detail'),
+    # path('token/', TokenObtainPairView.as_view(), name='token-obtain-pair'),
+    # path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    # path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
 ]
 
 if settings.DEBUG:

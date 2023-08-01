@@ -1,3 +1,5 @@
 .venv
 db.sqlite3
 media/movies/images/*.jpg
+movie_api/migrations
+movie_api/__pycache__

@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 def current_year():
     return datetime.date.today().year
@@ -14,6 +15,7 @@ class Movie(models.Model):
     category = models.CharField(max_length=50)
     description = models.TextField()
     image = models.ImageField(upload_to='movies/images/', null=True, blank=True)
+    age_rating = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.title}"

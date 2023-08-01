@@ -23,7 +23,7 @@ def movie_list(request):
             movies = Movie.objects.filter(title__icontains=title)
         else:
             movies = Movie.objects.all()
-            
+
         paginated_movies = paginator.paginate_queryset(movies, request)
         serializer = MovieSerializer(paginated_movies, many=True)
         #return JsonResponse({ 'movies': serializer.data }, safe=False, status=status.HTTP_200_OK)
