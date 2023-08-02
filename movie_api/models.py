@@ -17,6 +17,7 @@ class Movie(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='movies/images/', null=True, blank=True)
     age_rating = models.PositiveIntegerField(default=0)
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
 
     def __str__(self):
         return f"{self.title}"
@@ -33,7 +34,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
     
-
 class RegularUserPermission(Permission):
     def has_permission(self, request, view):
         return request.user.role == 'regular'
@@ -44,3 +44,19 @@ class AdminUserPermission(Permission):
     
     def has_object_permission(self, request, view, obj):
         return request.user.role == 'admin'
+
+class MovieRating(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.DecimalField(max_digits=2, decimal_places=1, validators=[MinValueValidator(0), MaxValueValidator(5)])
+
+    def save(self, *args, **kwargs):
+        super(MovieRating, self).save(*args, **kwargs)
+        self.update_movie_average_rating()
+
+    def update_movie_average_rating(self):
+        ratings = self.movie.ratings.all()
+        total_ratings = ratings.count()
+        average_rating = sum(rating.rating for rating in ratings) / total_ratings if total_ratings > 0 else 0
+        self.movie.average_rating = round(average_rating, 2)
+        self.movie.save()

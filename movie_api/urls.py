@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views import movie_list, movie_detail_id, UserRegistrationView, UserLoginView, UserListCreateView, UserRetrieveUpdateDestroyView
+from .views import movie_list, movie_detail_id, UserRegistrationView, UserLoginView, UserListCreateView, UserRetrieveUpdateDestroyView, create_movie_rating
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +33,7 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name='user-login'),
     path('users/', UserListCreateView.as_view(), name='user-list-create'),
     path('users/<int:pk>/', UserRetrieveUpdateDestroyView.as_view(), name='user-retrieve-update-destroy'),
+    path('movies/<int:movie_id>/rate/', create_movie_rating, name='movie-rate'),
 ]
 
 if settings.DEBUG:

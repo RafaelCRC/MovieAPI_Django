@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Movie, User
+from .models import Movie, User, MovieRating
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'year', 'category', 'description', 'image', 'age_rating']
+        fields = ['id', 'title', 'year', 'category', 'description', 'image', 'age_rating', 'average_rating', 'ratings']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +33,8 @@ class UserCRUDSerializer(serializers.ModelSerializer):
             user.set_password(password)
         user.save()
         return user
+    
+class MovieRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieRating
+        fields = ['id', 'movie', 'user', 'rating']

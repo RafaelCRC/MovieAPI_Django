@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 #from django.http import JsonResponse
-from .models import Movie, User, RegularUserPermission, AdminUserPermission
-from .serializers import MovieSerializer, UserSerializer, UserCRUDSerializer
+from .models import Movie, User, RegularUserPermission, AdminUserPermission, MovieRating
+from .serializers import MovieSerializer, UserSerializer, UserCRUDSerializer, MovieRatingSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -114,3 +114,27 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView): # on
 
 class UserLoginView(TokenObtainPairView):
     pass
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_movie_rating(request, movie_id):
+    try:
+        movie = Movie.objects.get(pk=movie_id)
+    except Movie.DoesNotExist:
+        return Response({"error": "Movie not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    user = request.user  # Get the authenticated user from the request
+
+    # Check if the user has already rated this movie
+    if MovieRating.objects.filter(movie=movie, user=user).exists():
+        return Response({"error": "You have already rated this movie."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Add the movie and user to the request data to create the rating
+    request.data["movie"] = movie_id
+    request.data["user"] = user.id
+
+    serializer = MovieRatingSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
