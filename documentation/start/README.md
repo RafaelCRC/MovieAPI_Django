@@ -18,6 +18,12 @@ Activate the virtual environment:
 - On Windows: `.venv\Scripts\activate`
 - On macOS and Linux: `source .venv/bin/activate`
 
+install django
+
+```bash
+python pip install django
+```
+
 3. Install Dependencies:
 
 With the virtual environment activated, install the project dependencies listed in the requirements.txt file. Run the following command:
