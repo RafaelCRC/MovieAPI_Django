@@ -17,3 +17,5 @@ Insert a user and password.
 Do the login in http://127.0.0.1:8000/admin/ and go to http://127.0.0.1:8000/admin/movie_api/user/
 
 Select a user and change the role to administrator (you need to create a new regular user)
+
+![alt](image.png)
